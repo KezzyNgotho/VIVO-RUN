@@ -260,20 +260,15 @@ window.addEventListener('DOMContentLoaded', function() {
       const stats = await window.reactWalletFunctions.getUserStats();
       
       console.log('📊 Blockchain Stats:');
-      console.log('  🪙 Tokens:', stats.tokens_earned);
-      console.log('  ❤️ Lives:', stats.available_lives);
-      console.log('  🏆 High Score:', stats.high_score);
-      console.log('  🎮 Games Played:', stats.total_games_played);
-      console.log('  📊 Total Score:', stats.total_score);
+      console.log('  🪙 Tokens:', stats.tokensEarned);
+      console.log('  ❤️ Lives:', stats.availableLives);
+      console.log('  🏆 High Score:', stats.highScore);
+      console.log('  🎮 Games Played:', stats.totalGamesPlayed);
+      console.log('  📊 Total Score:', stats.totalScore);
       console.log('  ⭐ Level:', stats.level);
       
-      // Check if contract is configured (if all stats are 0, might be default values)
-      if (stats.total_games_played === 0 && stats.total_score === 0 && stats.high_score === 0) {
-        console.log('💡 Note: Using default stats. Contract may not be deployed yet.');
-      }
-      
-      // Calculate spendable token balance
-      const tokenBalance = stats.tokens_earned || 0;
+      // Calculate spendable token balance (earned - spent on lifelines)
+      const tokenBalance = stats.tokensEarned - (stats.lifelinesPurchased * 10);
       
       // Update UI elements - COINS/TOKENS
       if (typeof mainCoinBlock !== 'undefined' && mainCoinBlock) {
@@ -283,14 +278,14 @@ window.addEventListener('DOMContentLoaded', function() {
       
       // Update HIGH SCORE
       if (typeof highScoreBlock !== 'undefined' && highScoreBlock) {
-        highScoreBlock.innerText = stats.high_score;
+        highScoreBlock.innerText = stats.highScore;
         console.log('✅ Updated highScoreBlock with blockchain high score');
       }
       
       // Update GAMES PLAYED
       const gamesPlayedElements = document.querySelectorAll('.gamesPlayedText, .gamesPlayedValue, #gamesPlayed, [data-stat="games-played"]');
       gamesPlayedElements.forEach(el => {
-        el.textContent = stats.total_games_played;
+        el.textContent = stats.totalGamesPlayed;
       });
       if (gamesPlayedElements.length > 0) {
         console.log('✅ Updated games played with blockchain value');
@@ -304,14 +299,14 @@ window.addEventListener('DOMContentLoaded', function() {
       
       // Update localStorage for backward compatibility
       localStorage.setItem('myCoins', tokenBalance);
-      localStorage.setItem('HI', stats.high_score);
+      localStorage.setItem('HI', stats.highScore);
       
       // Update global variables
       if (typeof window.myCoins !== 'undefined') {
         window.myCoins = tokenBalance;
       }
       if (typeof window.highScore !== 'undefined') {
-        window.highScore = stats.high_score;
+        window.highScore = stats.highScore;
       }
       
       // Update store coins text if visible
@@ -324,26 +319,15 @@ window.addEventListener('DOMContentLoaded', function() {
       
       return { 
         tokens: tokenBalance,
-        tokensEarned: stats.tokens_earned,
-        lives: stats.available_lives,
-        highScore: stats.high_score,
-        gamesPlayed: stats.total_games_played,
-        totalScore: stats.total_score,
+        tokensEarned: stats.tokensEarned,
+        lives: stats.availableLives,
+        highScore: stats.highScore,
+        gamesPlayed: stats.totalGamesPlayed,
+        totalScore: stats.totalScore,
         level: stats.level
       };
     } catch (error) {
-      // Silently handle errors - contract might not be deployed yet
-      console.log('⚠️ Stats sync skipped (contract may not be deployed yet):', error.message);
-      // Return default values so UI doesn't break
-      return {
-        tokens: 0,
-        tokensEarned: 0,
-        lives: 3,
-        highScore: 0,
-        gamesPlayed: 0,
-        totalScore: 0,
-        level: 1
-      };
+      console.error('❌ Failed to sync blockchain stats:', error);
     }
   };
 

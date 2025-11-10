@@ -125,6 +125,7 @@ export const StellarProvider: React.FC<{ children: React.ReactNode }> = ({ child
       console.log('📦 Freighter installed check:', isInstalled);
 
       // First, check if Freighter is installed by trying to check if allowed
+      let freighterAvailable = false;
       try {
         console.log('🔍 Calling isAllowed() to check Freighter availability...');
         const allowedCheck = await isAllowed();
@@ -143,6 +144,7 @@ export const StellarProvider: React.FC<{ children: React.ReactNode }> = ({ child
             throw new Error('Freighter wallet not found. Please install the Freighter extension from https://freighter.app/');
           }
         } else {
+          freighterAvailable = true;
           console.log('✅ Freighter is available!');
         }
       } catch (checkError: unknown) {
@@ -162,6 +164,7 @@ export const StellarProvider: React.FC<{ children: React.ReactNode }> = ({ child
         
         // If it's a different error, log it but continue
         console.warn('⚠️ Warning during isAllowed check (continuing anyway):', checkError);
+        freighterAvailable = true; // Assume it's available if error is not about installation
       }
 
       // Request access to wallet

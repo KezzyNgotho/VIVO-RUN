@@ -153,7 +153,6 @@ const WalletBridge: React.FC = () => {
 // Main App component
 const AppContent: React.FC = () => {
   const [gameStarted, setGameStarted] = React.useState(false);
-  const { connected, publicKey } = useStellar();
 
   const handlePlayClick = () => {
     console.log('🎮 Play button clicked');
@@ -188,14 +187,6 @@ const AppContent: React.FC = () => {
           <div>Framework: Scaffold Stellar</div>
           <div>Wallet: Freighter</div>
           <div>Network: Stellar Testnet</div>
-          <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #333' }}>
-            <div>Status: {connected ? '✅ Connected' : '❌ Disconnected'}</div>
-            {connected && publicKey && (
-              <div style={{ fontSize: '10px', wordBreak: 'break-all' }}>
-                {publicKey.slice(0, 8)}...{publicKey.slice(-6)}
-              </div>
-            )}
-          </div>
         </div>
       )}
       </div>

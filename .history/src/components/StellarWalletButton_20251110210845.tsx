@@ -6,6 +6,8 @@ export const StellarWalletButton: React.FC = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const displayAddress = publicKey ? `${publicKey.slice(0, 5)}...${publicKey.slice(-4)}` : '';
+
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -68,11 +70,6 @@ export const StellarWalletButton: React.FC = () => {
     }
   };
 
-  // Hide the button when connected
-  if (connected && publicKey) {
-    return null;
-  }
-
   return (
     <div className="wallet-button" style={{ zIndex: 1000, position: 'relative' }}>
       <button 
@@ -80,7 +77,7 @@ export const StellarWalletButton: React.FC = () => {
         onClick={handleClick} 
         className="wallet-btn"
         disabled={isConnecting}
-        title={error || 'Click to connect Freighter wallet'}
+        title={error || (connected ? 'Click to disconnect' : 'Click to connect Freighter wallet')}
         style={{ 
           pointerEvents: isConnecting ? 'none' : 'auto',
           cursor: isConnecting ? 'not-allowed' : 'pointer'
@@ -90,6 +87,11 @@ export const StellarWalletButton: React.FC = () => {
           <>
             <span className="wallet-status connecting">●</span>
             Connecting...
+          </>
+        ) : connected ? (
+          <>
+            <span className="wallet-status connected">●</span>
+            {displayAddress || 'Connected'}
           </>
         ) : (
           <>

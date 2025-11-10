@@ -84,31 +84,6 @@ export const StellarProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
-  // Helper function to check if Freighter extension is installed
-  const checkFreighterInstalled = (): boolean => {
-    if (typeof window === 'undefined') return false;
-    
-    // Check for Freighter extension in various ways
-    try {
-      // Method 1: Check if window.freighter exists
-      if ((window as any).freighter) {
-        console.log('✅ Freighter detected via window.freighter');
-        return true;
-      }
-      
-      // Method 2: Check for Freighter extension ID in Chrome
-      if (typeof (window as any).chrome !== 'undefined' && (window as any).chrome.runtime) {
-        // This is a basic check - the actual extension check happens via the API
-        console.log('✅ Chrome extension API available');
-      }
-      
-      return false;
-    } catch (e) {
-      console.warn('Error checking for Freighter:', e);
-      return false;
-    }
-  };
-
   const connect = async () => {
     try {
       // Check if we're in a browser environment
@@ -116,92 +91,18 @@ export const StellarProvider: React.FC<{ children: React.ReactNode }> = ({ child
         throw new Error('Wallet connection is only available in browser environment');
       }
 
-      console.log('🔌 Attempting to connect to Freighter wallet...');
-      console.log('🌐 Window object:', typeof window);
-      console.log('🔍 Checking for Freighter extension...');
-
-      // Check if Freighter is installed using helper
-      const isInstalled = checkFreighterInstalled();
-      console.log('📦 Freighter installed check:', isInstalled);
-
-      // First, check if Freighter is installed by trying to check if allowed
-      try {
-        console.log('🔍 Calling isAllowed() to check Freighter availability...');
-        const allowedCheck = await isAllowed();
-        console.log('📋 isAllowed check result:', allowedCheck);
-        
-        if (allowedCheck.error) {
-          const errorMsg = allowedCheck.error.message || '';
-          console.error('❌ isAllowed error:', errorMsg);
-          
-          // Check for specific error messages indicating Freighter is not installed
-          if (errorMsg.includes('not installed') || 
-              errorMsg.includes('not found') || 
-              errorMsg.includes('Extension') ||
-              errorMsg.includes('Freighter') ||
-              errorMsg.toLowerCase().includes('extension')) {
-            throw new Error('Freighter wallet not found. Please install the Freighter extension from https://freighter.app/');
-          }
-        } else {
-          console.log('✅ Freighter is available!');
-        }
-      } catch (checkError: unknown) {
-        const errorMsg = checkError instanceof Error ? checkError.message : String(checkError);
-        console.error('❌ Error during isAllowed check:', errorMsg);
-        
-        // If it's a clear "not installed" error, throw it
-        if (errorMsg.includes('not installed') || 
-            errorMsg.includes('not found') || 
-            errorMsg.includes('Extension') ||
-            errorMsg.includes('Freighter') ||
-            errorMsg.toLowerCase().includes('extension') ||
-            errorMsg.includes('Cannot read properties') ||
-            errorMsg.includes('undefined')) {
-          throw new Error('Freighter wallet not found. Please install the Freighter extension from https://freighter.app/');
-        }
-        
-        // If it's a different error, log it but continue
-        console.warn('⚠️ Warning during isAllowed check (continuing anyway):', checkError);
-      }
-
       // Request access to wallet
-      console.log('🔐 Requesting access to Freighter wallet...');
-      let accessResult;
-      
-      try {
-        accessResult = await requestAccess();
-        console.log('📥 Access result:', accessResult);
-      } catch (apiError: unknown) {
-        const errorMsg = apiError instanceof Error ? apiError.message : String(apiError);
-        console.error('❌ requestAccess() threw an error:', errorMsg);
-        
-        if (errorMsg.includes('not installed') || 
-            errorMsg.includes('not found') || 
-            errorMsg.includes('Extension') ||
-            errorMsg.includes('Freighter') ||
-            errorMsg.includes('Cannot read properties') ||
-            errorMsg.includes('undefined')) {
-          throw new Error('Freighter wallet not found. Please install the Freighter extension from https://freighter.app/');
-        }
-        
-        throw new Error(`Failed to connect: ${errorMsg}`);
-      }
+      const accessResult = await requestAccess();
       
       if (accessResult.error) {
         const errorMsg = accessResult.error.message || 'Failed to connect wallet';
-        console.error('❌ Access error:', errorMsg);
         
         // Provide helpful error messages
-        if (errorMsg.includes('not installed') || 
-            errorMsg.includes('not found') || 
-            errorMsg.includes('Extension') ||
-            errorMsg.includes('Freighter')) {
+        if (errorMsg.includes('not installed') || errorMsg.includes('not found')) {
           throw new Error('Freighter wallet not found. Please install the Freighter extension from https://freighter.app/');
         }
         
-        if (errorMsg.includes('User rejected') || 
-            errorMsg.includes('denied') || 
-            errorMsg.includes('rejected')) {
+        if (errorMsg.includes('User rejected') || errorMsg.includes('denied')) {
           throw new Error('Connection request was rejected. Please approve the connection in Freighter.');
         }
         
@@ -213,11 +114,10 @@ export const StellarProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setConnected(true);
         console.log('✅ Connected to Stellar wallet:', accessResult.address);
       } else {
-        console.error('❌ No address in access result:', accessResult);
         throw new Error('No address returned from wallet. Please try again.');
       }
     } catch (error: unknown) {
-      console.error('❌ Failed to connect Stellar wallet:', error);
+      console.error('Failed to connect Stellar wallet:', error);
       
       // Re-throw with improved error message
       if (error instanceof Error) {
@@ -271,7 +171,7 @@ export const StellarProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       await buyLifeline(publicKey);
       console.log('✅ Lifeline purchased successfully');
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Failed to buy lifeline:', error);
       console.warn('Contract interaction not yet fully implemented.');
     }
@@ -312,18 +212,9 @@ export const StellarProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     try {
       return await getPlayerStats(publicKey);
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Failed to get user stats:', error);
-      // Return default stats if there's an error (e.g., contract not configured)
-      console.log('Returning default stats due to error');
-      return {
-        total_games_played: 0,
-        total_score: 0,
-        high_score: 0,
-        tokens_earned: 0,
-        level: 1,
-        available_lives: 3,
-      };
+      throw error;
     }
   };
 

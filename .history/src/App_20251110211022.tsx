@@ -88,64 +88,43 @@ const WalletBridge: React.FC = () => {
 
   useEffect(() => {
     // Expose wallet status and functions to game.js
-    const updateWalletFunctions = () => {
-      window.reactWalletFunctions = {
-        getWalletStatus: () => {
-          // ALWAYS get latest values from ref to avoid closure issues
-          const { connected: isConnected, publicKey: address } = walletStateRef.current;
-          const status = {
-            connected: isConnected,
-            address: address || null,
-            balance: null // Can be fetched from Stellar if needed
-          };
-          console.log('📊 getWalletStatus called, returning:', status);
-          return status;
-        },
-        connectWallet: connect,
-        disconnectWallet: () => { disconnect(); return Promise.resolve(); },
-        submitGameScore: submitScore,
-        claimQuestReward: claimReward,
-        buyLifeLine: buyLifeLine,
-        getTokenBalance: getTokenBalance,
-        getAvailableLives: getAvailableLives,
-        getUserStats: getUserStats,
-      };
-
-      // Also expose connect/disconnect functions directly
-      window.connectWallet = connect;
-      window.disconnectWallet = disconnect;
-      
-      // Expose wallet state directly for easy access
-      (window as any).walletState = {
-        connected,
-        publicKey: publicKey || null,
-        getStatus: () => walletStateRef.current
-      };
+    window.reactWalletFunctions = {
+      getWalletStatus: () => {
+        // ALWAYS get latest values from ref to avoid closure issues
+        const { connected: isConnected, publicKey: address } = walletStateRef.current;
+        const status = {
+          connected: isConnected,
+          address: address || null,
+          balance: null // Can be fetched from Stellar if needed
+        };
+        console.log('📊 getWalletStatus called, returning:', status);
+        console.log('📊 Ref values:', walletStateRef.current);
+        return status;
+      },
+      connectWallet: connect,
+      disconnectWallet: () => { disconnect(); return Promise.resolve(); },
+      submitGameScore: submitScore,
+      claimQuestReward: claimReward,
+      buyLifeLine: buyLifeLine,
+      getTokenBalance: getTokenBalance,
+      getAvailableLives: getAvailableLives,
+      getUserStats: getUserStats,
     };
+
+    // Also expose connect/disconnect functions directly
+    window.connectWallet = connect;
+    window.disconnectWallet = disconnect;
     
-    updateWalletFunctions();
     console.log('✅ React wallet functions exposed to window.reactWalletFunctions');
     console.log('✅ Available functions:', Object.keys(window.reactWalletFunctions));
     
-    // Update functions whenever dependencies change
     return () => {
-      // Functions will be recreated on next render
+      // Cleanup on unmount - functions are optional
+      // Cleanup is handled automatically by React
+      // Functions will be recreated on next mount if needed
     };
-  }, [connect, disconnect, submitScore, claimReward, buyLifeLine, getTokenBalance, getAvailableLives, getUserStats, connected, publicKey]);
+  }, [connect, disconnect, submitScore, claimReward, buyLifeLine, getTokenBalance, getAvailableLives, getUserStats]);
 
-  // Listen for wallet status changes from other parts of the app
-  useEffect(() => {
-    const handleWalletStatusChange = (event: CustomEvent) => {
-      console.log('📡 Received wallet status change event:', event.detail);
-    };
-    
-    window.addEventListener('walletStatusChanged', handleWalletStatusChange as EventListener);
-    
-    return () => {
-      window.removeEventListener('walletStatusChanged', handleWalletStatusChange as EventListener);
-    };
-  }, []);
-  
   // This component doesn't render anything, it just sets up the bridge
   return null;
 };
@@ -153,7 +132,6 @@ const WalletBridge: React.FC = () => {
 // Main App component
 const AppContent: React.FC = () => {
   const [gameStarted, setGameStarted] = React.useState(false);
-  const { connected, publicKey } = useStellar();
 
   const handlePlayClick = () => {
     console.log('🎮 Play button clicked');
@@ -188,14 +166,6 @@ const AppContent: React.FC = () => {
           <div>Framework: Scaffold Stellar</div>
           <div>Wallet: Freighter</div>
           <div>Network: Stellar Testnet</div>
-          <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #333' }}>
-            <div>Status: {connected ? '✅ Connected' : '❌ Disconnected'}</div>
-            {connected && publicKey && (
-              <div style={{ fontSize: '10px', wordBreak: 'break-all' }}>
-                {publicKey.slice(0, 8)}...{publicKey.slice(-6)}
-              </div>
-            )}
-          </div>
         </div>
       )}
       </div>

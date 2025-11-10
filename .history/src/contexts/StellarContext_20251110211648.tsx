@@ -162,6 +162,7 @@ export const StellarProvider: React.FC<{ children: React.ReactNode }> = ({ child
         
         // If it's a different error, log it but continue
         console.warn('⚠️ Warning during isAllowed check (continuing anyway):', checkError);
+        freighterAvailable = true; // Assume it's available if error is not about installation
       }
 
       // Request access to wallet

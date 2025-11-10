@@ -304,14 +304,14 @@ window.addEventListener('DOMContentLoaded', function() {
       
       // Update localStorage for backward compatibility
       localStorage.setItem('myCoins', tokenBalance);
-      localStorage.setItem('HI', stats.high_score);
+      localStorage.setItem('HI', stats.highScore);
       
       // Update global variables
       if (typeof window.myCoins !== 'undefined') {
         window.myCoins = tokenBalance;
       }
       if (typeof window.highScore !== 'undefined') {
-        window.highScore = stats.high_score;
+        window.highScore = stats.highScore;
       }
       
       // Update store coins text if visible
@@ -324,26 +324,15 @@ window.addEventListener('DOMContentLoaded', function() {
       
       return { 
         tokens: tokenBalance,
-        tokensEarned: stats.tokens_earned,
-        lives: stats.available_lives,
-        highScore: stats.high_score,
-        gamesPlayed: stats.total_games_played,
-        totalScore: stats.total_score,
+        tokensEarned: stats.tokensEarned,
+        lives: stats.availableLives,
+        highScore: stats.highScore,
+        gamesPlayed: stats.totalGamesPlayed,
+        totalScore: stats.totalScore,
         level: stats.level
       };
     } catch (error) {
-      // Silently handle errors - contract might not be deployed yet
-      console.log('⚠️ Stats sync skipped (contract may not be deployed yet):', error.message);
-      // Return default values so UI doesn't break
-      return {
-        tokens: 0,
-        tokensEarned: 0,
-        lives: 3,
-        highScore: 0,
-        gamesPlayed: 0,
-        totalScore: 0,
-        level: 1
-      };
+      console.error('❌ Failed to sync blockchain stats:', error);
     }
   };
 

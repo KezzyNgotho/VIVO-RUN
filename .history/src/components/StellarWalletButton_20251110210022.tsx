@@ -6,47 +6,34 @@ export const StellarWalletButton: React.FC = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const displayAddress = publicKey ? `${publicKey.slice(0, 5)}...${publicKey.slice(-4)}` : '';
+
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('🖱️ ===== WALLET BUTTON CLICKED =====');
-    console.log('🖱️ Current state:', { connected, publicKey, isConnecting });
-    console.log('🖱️ Event:', e);
-    console.log('🖱️ Button element:', e.currentTarget);
+    console.log('🖱️ Wallet button clicked. Current state:', { connected, publicKey });
     
     if (connected) {
       console.log('🔌 Disconnecting wallet...');
       disconnect();
       setError(null);
     } else {
-      console.log('🔌 Starting wallet connection process...');
+      console.log('🔌 Starting wallet connection...');
       setIsConnecting(true);
       setError(null);
       
-      // Add a small delay to ensure state updates
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
       try {
-        console.log('🔌 Calling connect() function...');
         await connect();
         setError(null);
         console.log('✅ Wallet connected successfully!');
       } catch (error: unknown) {
-        console.error('❌ ===== WALLET CONNECTION ERROR =====');
-        console.error('❌ Error object:', error);
-        console.error('❌ Error type:', typeof error);
-        console.error('❌ Error instanceof Error:', error instanceof Error);
-        
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        console.error('❌ Error message:', errorMessage);
+        console.error('❌ Wallet connection error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to connect wallet';
         setError(errorMessage);
         
         // Show user-friendly error message
-        if (errorMessage.includes('not found') || 
-            errorMessage.includes('not installed') || 
-            errorMessage.includes('Extension') ||
-            errorMessage.includes('Freighter')) {
+        if (errorMessage.includes('not found') || errorMessage.includes('not installed') || errorMessage.includes('Extension')) {
           const installFreighter = confirm(
             'Freighter wallet not found!\n\n' +
             'Would you like to install Freighter?\n\n' +
@@ -63,33 +50,27 @@ export const StellarWalletButton: React.FC = () => {
         }
       } finally {
         setIsConnecting(false);
-        console.log('🔌 Connection process finished');
       }
     }
   };
 
-  // Hide the button when connected
-  if (connected && publicKey) {
-    return null;
-  }
-
   return (
-    <div className="wallet-button" style={{ zIndex: 1000, position: 'relative' }}>
+    <div className="wallet-button">
       <button 
-        type="button"
         onClick={handleClick} 
         className="wallet-btn"
         disabled={isConnecting}
-        title={error || 'Click to connect Freighter wallet'}
-        style={{ 
-          pointerEvents: isConnecting ? 'none' : 'auto',
-          cursor: isConnecting ? 'not-allowed' : 'pointer'
-        }}
+        title={error || (connected ? 'Click to disconnect' : 'Click to connect Freighter wallet')}
       >
         {isConnecting ? (
           <>
             <span className="wallet-status connecting">●</span>
             Connecting...
+          </>
+        ) : connected ? (
+          <>
+            <span className="wallet-status connected">●</span>
+            {displayAddress || 'Connected'}
           </>
         ) : (
           <>
