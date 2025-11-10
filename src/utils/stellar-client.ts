@@ -30,8 +30,10 @@ export function getContractAddressForNetwork(network: "testnet" | "mainnet" = "t
 
 /**
  * Helper function to make RPC calls to Soroban
+ * Note: Currently unused but kept for future implementation
  */
-async function rpcCall(method: string, params: any, network: "testnet" | "mainnet" = "testnet"): Promise<any> {
+// @ts-ignore - Unused function kept for future use
+async function _rpcCall(method: string, params: any, network: "testnet" | "mainnet" = "testnet"): Promise<any> {
   const url = getRpcUrl(network);
   
   try {

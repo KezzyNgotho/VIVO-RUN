@@ -91,7 +91,7 @@ function getDefaultStats(): PlayerStats {
 export async function checkContractAccessibility(contractAddress: string): Promise<boolean> {
   try {
     // Try to get contract info
-    const result = await callRpc("getLedgerEntries", {
+    await callRpc("getLedgerEntries", {
       keys: [{
         contractData: {
           contract: contractAddress,
