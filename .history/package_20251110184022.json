@@ -1,0 +1,78 @@
+{
+  "name": "vivorun",
+  "description": "VIVO RUN – Arcade dApp showcasing Scaffold Stellar speed & efficiency",
+  "version": "1.0.0",
+  "type": "module",
+  "keywords": [
+    "blockchain",
+    "stellar",
+    "game",
+    "arcade",
+    "web3",
+    "react",
+    "typescript",
+    "smart-contracts",
+    "soroban",
+    "freighter",
+    "stellar-wallet-kit"
+  ],
+  "author": {
+    "name": "VIVO RUN Team",
+    "email": "team@vivorun.app",
+    "url": "https://vivorun.app"
+  },
+  "license": "MIT",
+  "homepage": "https://vivorun.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KezzyNgotho/VIVORUN.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KezzyNgotho/VIVORUN/issues"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
+    "type-check": "tsc --noEmit",
+    "contracts:deploy:testnet": "echo \"Use Scaffold Stellar (soroban) deploy script here\"",
+    "contracts:deploy:mainnet": "echo \"Use Scaffold Stellar (soroban) deploy script here\"",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "dependencies": {
+    "@stellar/freighter-api": "^3.12.0",
+    "soroban-client": "^0.10.0",
+    "stellar-wallets-kit": "^1.12.0",
+    "buffer": "^6.0.3",
+    "lucide-react": "^0.546.0",
+    "process": "^0.11.10",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.4",
+    "eslint": "^9.36.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.22",
+    "globals": "^16.4.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.45.0",
+    "vite": "npm:rolldown-vite@7.1.14",
+    "vite-plugin-node-polyfills": "^0.21.0"
+  },
+  "overrides": {
+    "vite": "npm:rolldown-vite@7.1.14"
+  }
+}
