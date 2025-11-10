@@ -10,7 +10,7 @@ name = "vivo_run_game"
 [dependencies]
 soroban-sdk = "21.3.0"
 
-[dev_dependencies]
+[dev-dependencies]
 soroban-sdk = { version = "21.3.0", features = ["testutils"] }
 
 [features]
